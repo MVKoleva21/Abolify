@@ -1,7 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from db.db import curr, conn
-from modules.UserIM import UserIM
+from models.UserIM import UserIM
+from models.Token import Token
 from dotenv import load_dotenv
+from typing import Annotated, Union
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import hashlib
 import random
 import string
@@ -15,7 +18,9 @@ router = APIRouter()
 
 load_dotenv()
 
-@router.post("/register", tags=["users"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@router.post("/register", tags=["authentication"])
 def register(user_im: UserIM):
     curr.execute("""SELECT * FROM users WHERE username = %s""", (user_im.username, ))
 
@@ -48,8 +53,9 @@ def register(user_im: UserIM):
 
     conn.commit()
 
-@router.post("/login", tags=["users"])
+@router.post("/login", tags=["authentication"])
 def login(user_im: UserIM):
+    print(user_im.username)
     curr.execute("""SELECT * FROM users WHERE username = %s""", (user_im.username, ))
 
     user_db = curr.fetchone()
@@ -69,4 +75,70 @@ def login(user_im: UserIM):
 
     token = jwt.encode({"iss": user_db[0], "exp": datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(hours=3)}, private_key, algorithm="RS256")
 
-    return {"token": token}
+    return {"access_token": token}
+
+@router.post("/token", tags=["authentication"])
+def token(user_im: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+    print(user_im.username)
+    curr.execute("""SELECT * FROM users WHERE username = %s""", (user_im.username, ))
+
+    user_db = curr.fetchone()
+
+    if not user_db:
+        raise HTTPException(status_code=401, detail=f"User with username {user_im.username} not found", headers={"WWW-Authenticate": "Bearer"})
+    
+    with open("db/salt.json", 'r') as f:
+        salt = json.load(f)[user_im.username]
+
+    password = hashlib.sha512((salt + user_im.password).encode('utf-8')).hexdigest()
+
+    if password != user_db[2]:
+        raise HTTPException(status_code=401, detail="Incorrect password", headers={"WWW-Authenticate": "Bearer"})
+
+    private_key = os.getenv("RSA_PRIVATE")
+
+    token = jwt.encode({"iss": user_db[0], "exp": datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(hours=3)}, private_key, algorithm="RS256")
+
+    return Token(access_token=token, token_type="bearer")
+
+@router.get("/user", tags=["users"])
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        public_key = os.getenv("RSA_PUBLIC")
+
+        payload = jwt.decode(token, public_key, algorithms=["RS256"])
+
+    except jwt.InvalidSignatureError:
+        raise HTTPException(status_code=401, detail="Invalid token signature")
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    
+    except jwt.DecodeError:
+        raise HTTPException(status_code=401, detail="Token couldn't be decoded")
+
+    curr.execute("""SELECT * FROM users WHERE id = %s""", (payload["iss"], ))
+
+    user = curr.fetchone()
+
+    return user[1]
+
+@router.get("/user/chats", tags=["users", "chats"])
+def get_user_chats(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        public_key = os.getenv("RSA_PUBLIC")
+
+        payload = jwt.decode(token, public_key, algorithms=["RS256"])
+
+    except jwt.InvalidSignatureError:
+        raise HTTPException(status_code=401, detail="Invalid token signature")
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    
+    except jwt.DecodeError:
+        raise HTTPException(status_code=401, detail="Token couldn't be decoded")
+
+    curr.execute("SELECT * FROM chats WHERE user_id = %s", (payload["iss"], ))
+
+    return curr.fetchall()

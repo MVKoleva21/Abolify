@@ -2,10 +2,9 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from modules.UserIM import UserIM
 from db.db import curr
 
-from routes import users
+from routes import users, chats, messages
 
 app = FastAPI()
 
@@ -22,3 +21,5 @@ app.add_middleware(
 )
 
 app.include_router(users.router)
+app.include_router(chats.router)
+app.include_router(messages.router)
