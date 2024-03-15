@@ -7,6 +7,10 @@ import squiglyLine from '/public/not-straith-line.png'
 import { Button } from '@/components/ui/button'
 
 export default function Home() {
+    const handleLogin = () => {
+        console.log("Login")
+    }
+
     return (
         <>
             <div className="min-w-screen min-h-screen relative flex flex-col bg-radial-gradient-home before:content-[''] before:w-full before:h-full before:bg-[#FFFFFF40] before:absolute before:top-0 before:left-0 before:backdrop-blur-[128px]">
@@ -28,7 +32,7 @@ By making hard to search in outdated site of the most popular university in Bulg
 Let us help you unlock your  potential and embark on your academic journey with ease and confidence.</p>
 
                     <div className='flex flex-col gap-10 mt-[80px] justify-center items-center'>
-                        <Button className='z-20 hover:bg-gradient-to-r from-orange-400 via-pink-500 to-indigo-800 px-8 py-6 bg-[#ffffff00] border-2 border-white'>Create Account/ Sign in</Button>
+                        <Button onClick={handleLogin} className='z-20 hover:bg-gradient-to-r from-[#FFAE63] via-[#FC76C6] to-[#7367FF] px-8 py-6 bg-[#ffffff00] border-2 border-white'>Create Account/ Sign in</Button>
                         <img className='relative top-[-30px]' src={squiglyLine} alt="" />
                     </div>
                 </div>
