@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Home from './routes/Home'
 import SignUp from './routes/SignUp'
 import SignIn from './routes/SignIn'
+import Chat from './routes/Chat'
 
 function App() {
 
@@ -9,6 +10,7 @@ function App() {
     { path: '/', element: <Home /> },
     { path: '/signup', element: <SignUp /> },
     { path: '/signin', element: <SignIn /> },
+    { path: '/chat', element: <Chat /> },
   ])
 
   return (
