@@ -5,6 +5,8 @@ import ChatEntry from "@/components/ChatEntry"
 import { Textarea } from "@/components/ui/textarea"
 import planeIcon from "/public/plane.png"
 import abolifyBotBig from '/public/bg-bot-thingy.png'
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface ChatEntryType {
     name: String
@@ -27,12 +29,16 @@ export default function Chat() {
 
     return (
         <>
-            <div className="min-w-screen min-h-screen bg-gradient-to-b from-[#1E1E1E] to-[#6618E7] flex">
+            <div className="min-w-screen h-screen bg-gradient-to-b from-[#1E1E1E] to-[#6618E7] flex">
                 <div className="w-1/5 bg-white min-h-[80%] items-center flex flex-col my-5 ml-5 rounded-2xl">
                     <div className="w-[90%] h-full mt-12 flex flex-col items-center">
 
                         <div className="flex gap-4 items-center border border-pink-50 w-full p-2 px-4 rounded-[36px]">
-                            <div className="h-[34px] w-[34px] rounded-full bg-purple-100"></div>
+                            <Avatar>
+                                <AvatarImage src="" /> 
+                                <AvatarFallback>IS</AvatarFallback>
+                            </Avatar>
+
                             <h1>Ivan Stoychev</h1>
                         </div> 
 
@@ -46,13 +52,13 @@ export default function Chat() {
                             <Button variant="link" className="text-purple-800 font-bold">Clear All</Button>
                         </div>
 
-                        <div className="h-full flex flex-col overflow-auto">
+                        <ScrollArea className="h-full flex flex-col overflow-auto">
                             {
                                 chats.map((entry) => {
                                     return <ChatEntry chatTitle={entry.name} />                     
                                 })
                             }
-                        </div>
+                        </ScrollArea>
                     </div>
                 </div>
 
