@@ -19,7 +19,7 @@ export default function SignUp() {
 
     const { toast } = useToast()
 
-    const handleSignUp = (e) => {
+    const handleSignUp = (e: any) => {
         e.preventDefault()
 
         if(passwordVal != confirmPassword)

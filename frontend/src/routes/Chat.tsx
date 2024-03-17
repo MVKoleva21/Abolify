@@ -8,9 +8,9 @@ import abolifyBotBig from '/public/bg-bot-thingy.png';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import axios from "axios";
-import Cookie from "js-cookie"
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog"  
-import { Input } from '@/components/ui/input'
+import Cookie from "js-cookie";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog"; 
+import { Input } from '@/components/ui/input';
 
 interface ChatEntryType {
     name: string;
@@ -19,7 +19,7 @@ interface ChatEntryType {
 export default function Chat() {
     const [isChatEmpty, setIsChatEmpty] = useState(true);
     const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Default theme is light
-    const [themeApplied, setThemeApplied] = useState<boolean>(false);
+    const [_, setThemeApplied] = useState<boolean>(false);
 
     useEffect(() => {
         const applyTheme = () => {
@@ -35,9 +35,9 @@ export default function Chat() {
         setTheme(newTheme);
     };
 
-    const [user, setUser] = useState<string>('none')
+    const [user] = useState<string>('none')
     const [chatHistory, setChatHistory] = useState<any>([])
-    const [chat, setChat] = useState<number>(Cookie.get('chat') ? parseInt(Cookie.get('chat')) : 0)
+    const [chat, setChat] = useState<any>(Cookie.get('chat') ? Cookie.get('chat') : 0)
     const [chatMessages, setChatMessages] = useState<any>([])
 
     useEffect(() => {
@@ -59,7 +59,7 @@ export default function Chat() {
             })
             .then((res) => {
                 res.data.reverse().forEach((chat: ChatEntryType) => {
-                    setChatHistory((prev) => [...prev, chat])
+                    setChatHistory((prev: any) => [...prev, chat])
                 })
             })
     }, [])
@@ -104,7 +104,7 @@ export default function Chat() {
 
     let [message, setMessage] = useState<string>('')
 
-    const handelNewMessage = (e) => {
+    const handelNewMessage = (e: any) => {
         e.preventDefault()
 
         let data = {
@@ -168,7 +168,7 @@ export default function Chat() {
                             </div>
                             <ScrollArea className="h-full flex flex-col overflow-auto">
                                 {
-                                    chatHistory.map((chat: ChatEntryType) => {
+                                    chatHistory.map((chat: any) => {
                                         return <ChatEntry onclick={() => setChat(chat[0])} chatTitle={chat[2]} />
                                     })
                                 }
@@ -184,7 +184,7 @@ export default function Chat() {
 
                     
                             {
-                                chatMessages.map((message, index) => {
+                                chatMessages.map((message: any, index: any) => {
                                     if(index % 2 == 0)
                                         return <div className="bg-gradient-to-r from-[#FAD987] to-[#ffffff00] w-[70%] h-[12%] rounded-xl flex gap-5 p-6 items-center">
                                             <p className="text-white">{message[2]}</p>

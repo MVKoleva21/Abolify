@@ -15,7 +15,7 @@ export default function SignIn() {
 
     const navigator = useNavigate();
 
-    const handelSubmit = (e) => {
+    const handelSubmit = (e: any) => {
         e.preventDefault()
 
         interface LoginData {
