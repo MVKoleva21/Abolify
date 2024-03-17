@@ -6,12 +6,34 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import Cookie from 'js-cookie'
 
 export default function SignIn() {
-    let [userName, setUserName] = useState<string>('')
-    let [password, setPassword] = useState<string>('')
+    const [userName, setUserName] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
 
     const navigator = useNavigate();
+
+    const handelSubmit = (e) => {
+        e.preventDefault()
+
+        interface LoginData {
+            username: string,
+            password: string
+        }
+
+        const data: LoginData = {
+            username: userName,
+            password: password
+        }
+
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/login`, data, {withCredentials: true})
+            .then((res) => {
+                Cookie.set('token', res.data.access_token)
+                navigator("/chat")
+            })
+    }
 
     return (
         <>
@@ -40,7 +62,7 @@ export default function SignIn() {
                     <div className='mt-[25%] flex flex-col justify-center items-center text-white gap-14'>
                         <h1 className='text-6xl'>Sign In</h1> 
 
-                        <form className='flex flex-col gap-5 w-[380px]'>
+                        <form onSubmit={handelSubmit} className='flex flex-col gap-5 w-[380px]'>
                             <div className="relative after:content-[''] after:w-full after:absolute after:bg-[#333] after:h-[1px] after:bottom-0 after:left-0">
                                 <Input className="p-6 text-xl border-none" onChange={(e) => setUserName(e.target.value)} placeholder='Username' />
                             </div>

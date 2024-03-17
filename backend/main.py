@@ -1,15 +1,18 @@
 from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from dotenv import load_dotenv
 from db.db import curr
+import os
 
 from routes import users, chats, messages
+
+load_dotenv()
 
 app = FastAPI()
 
 origins = [
-    "*"
+    os.getenv("FRONTEND_URL")
 ]
 
 app.add_middleware(

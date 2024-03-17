@@ -5,11 +5,10 @@ import circles from '/public/circles.png'
 import nameLine from '/public/name-line.png'
 import squiglyLine from '/public/not-straith-line.png'
 import { Button } from '@/components/ui/button'
+import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
-    const handleLogin = () => {
-        console.log("Login")
-    }
+    const navigator = useNavigate();
 
     return (
         <>
@@ -32,7 +31,7 @@ By making hard to search in outdated site of the most popular university in Bulg
 Let us help you unlock your  potential and embark on your academic journey with ease and confidence.</p>
 
                     <div className='flex flex-col gap-10 mt-[80px] justify-center items-center'>
-                        <Button onClick={handleLogin} className='z-20 hover:bg-gradient-to-r from-[#FFAE63] via-[#FC76C6] to-[#7367FF] px-8 py-6 bg-[#ffffff00] border-2 border-white'>Create Account/ Sign in</Button>
+                        <Button onClick={() => navigator('/signup')} className='z-20 hover:bg-gradient-to-r from-[#FFAE63] via-[#FC76C6] to-[#7367FF] px-8 py-6 bg-[#ffffff00] border-2 border-white'>Create Account/ Sign in</Button>
                         <img className='relative top-[-30px]' src={squiglyLine} alt="" />
                     </div>
                 </div>

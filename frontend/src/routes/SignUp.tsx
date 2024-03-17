@@ -6,13 +6,46 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function SignUp() {
-    let [userName, setUserName] = useState<string>('')
-    let [password, setPassword] = useState<string>('')
-    let [confirmPassword, setConfirmPassword] = useState<string>('')
+    const [userNameVal, setUserName] = useState<string>('')
+    const [passwordVal, setPassword] = useState<string>('')
+    const [confirmPassword, setConfirmPassword] = useState<string>('')
 
     const navigator = useNavigate();
+
+    const { toast } = useToast()
+
+    const handleSignUp = (e) => {
+        e.preventDefault()
+
+        if(passwordVal != confirmPassword)
+        {
+            toast({
+              title: "Password not matching"
+            }) 
+
+            return
+        }
+
+        interface SignUpData {
+            username: string,
+            password: string
+        }
+
+        const data: SignUpData = {
+            username: userNameVal,
+            password: passwordVal
+        }
+
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/register`, data, {withCredentials: true})
+            .then(() => {
+                navigator("/chat")
+            })
+    }
 
     return (
         <>
@@ -20,8 +53,8 @@ export default function SignUp() {
                 <div className="w-1/2 min-h-full pt-36 pl-24 bg-radial-gradient-home before:content-[''] before:w-full before:h-full before:bg-[#FFFFFF40] before:absolute before:top-0 before:left-0 before:backdrop-blur-[128px]">
                     <img className='absolute top-4 left-4' src={abolifyBot} alt="" />
                     <div className='flex flex-col text-white z-2 relative gap-4 justify-center items-center font-black w-fit'>
-                        <h1 className='text-4xl'>Learn & Discover</h1>
-                        <h1 className='text-2xl'>about</h1>
+                        <h1 className='text-6xl'>Learn & Discover</h1>
+                        <h1 className='text-xl pl-40'>about</h1>
                     </div>
                     <div className='flex flex-col relative z-20 justify-center items-end'>
                         <img src={sofiaUni} alt="" />
@@ -41,7 +74,7 @@ export default function SignUp() {
                     <div className='mt-[25%] flex flex-col justify-center items-center text-white gap-14'>
                         <h1 className='text-6xl'>Register</h1> 
 
-                        <form className='flex flex-col gap-5 w-[380px]'>
+                        <form onSubmit={handleSignUp} className='flex flex-col gap-5 w-[380px]'>
                             <div className="relative after:content-[''] after:w-full after:absolute after:bg-[#333] after:h-[1px] after:bottom-0 after:left-0">
                                 <Input className="p-6 text-xl border-none" onChange={(e) => setUserName(e.target.value)} placeholder='Username' />
                             </div>
@@ -65,6 +98,8 @@ export default function SignUp() {
                     </div>
                 </div>
             </div>
+
+            <Toaster />
         </>
     )
 }
