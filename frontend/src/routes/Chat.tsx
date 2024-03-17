@@ -11,13 +11,13 @@ import axios from "axios";
 import Cookie from "js-cookie";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog"; 
 import { Input } from '@/components/ui/input';
+import Cookies from 'js-cookie';
 
 interface ChatEntryType {
     name: string;
 }
 
 export default function Chat() {
-    const [isChatEmpty, setIsChatEmpty] = useState(true);
     const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Default theme is light
     const [_, setThemeApplied] = useState<boolean>(false);
 
@@ -35,75 +35,65 @@ export default function Chat() {
         setTheme(newTheme);
     };
 
-    const [user, setUser] = useState<string>('none')
+    const [user, setUser] = useState<string>()
     const [chatHistory, setChatHistory] = useState<any>([])
-    const [chat, setChat] = useState<any>(Cookie.get('chat') ? Cookie.get('chat') : 0)
+    const [chat, setChat] = useState<any>(Cookies.get('chat'))
     const [chatMessages, setChatMessages] = useState<any>([])
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_BACKEND_URL}/user`, {
-            withCredentials: true,
             headers: {
-                    'Authorization': `Bearer ${Cookie.get('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             })
             .then((res) => {
-                console.log(res.data)
-            })
-
-        axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/chats`, {
-            withCredentials: true,
-            headers: {
-                    'Authorization': `Bearer ${Cookie.get('token')}`
-                }
-            })
-            .then((res) => {
-                res.data.reverse().forEach((chat: ChatEntryType) => {
-                    setChatHistory((prev: any) => [...prev, chat])
-                })
+                setUser(res.data)
             })
     }, [])
 
     useEffect(() => {
-        if (chat) {
-            axios.get(`${import.meta.env.VITE_BACKEND_URL}/chat/${chat}`, {
-                withCredentials: true,
-                headers: {
-                        'Authorization': `Bearer ${Cookie.get('token')}`
-                    }
-                })
-                .then((res) => {
-                    setChatMessages(res.data.messages)
-                })
+        if(chat == null)
+            return
 
-            setIsChatEmpty(false)
-
-            Cookie.set('chat', chat.toString())
-        }
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/chat/${chat}`, {
+            headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }}).then((res) => {
+                Cookies.set('chat', chat)
+                setChatMessages(res.data['messages'])
+            })
     }, [chat])
 
-    const [newChatName, setNewChatName] = useState<string>('')
+    useEffect(() => {
+        if(user === 'none')
+            return
 
-    const handelNewChat = () => {
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/chats`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        }).then(async res => {
+            setChatHistory(res.data.reverse())
+        })}, [user])
+
+    const [newChatName, setNewChatName] = useState<string>('')
+    let handelNewChat = () => {
         let data = {
             alias: newChatName
         }
 
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/chat`, data, {
-            withCredentials: true,
             headers: {
-                'Authorization': `Bearer ${Cookie.get('token')}`
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         })
         .then((res) => {
-            Cookie.set('chat', res.data[0].toString())
-
+            Cookies.set('chat', res.data['id'])
             window.location.reload()
         })
     }
 
     let [message, setMessage] = useState<string>('')
-
     const handelNewMessage = (e: any) => {
         e.preventDefault()
 
@@ -122,7 +112,7 @@ export default function Chat() {
             window.location.reload()
         })
     }
-                
+
     return (
         <>
             <div className={`min-w-screen h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-[#1E1E1E] to-[#6618E7]' : 'bg-gradient-to-b from-[#FAD987] to-[#EA3FC5]'} flex`}>
@@ -177,11 +167,7 @@ export default function Chat() {
                     </div>
                     <div className="w-4/5 min-h-[80%] items-center flex flex-col m-5 relative rounded-2xl text-white">
                     <div className={`${theme === 'dark' ? 'text-white' : 'text-black'} w-full h-5/6 flex flex-col p-4 ml-[300px] gap-2`}>
-                        {isChatEmpty && <div className="absolute top-[30%] text-center  text-4xl font-bold left-[50%] translate-x-[-50%] translate-y-[-50%]">
-                            <h1>Good day! How may I assist you today?</h1>
-                        </div>}
                         <img className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mix-blend-overlay select-none" draggable="false" src={abolifyBotBig} alt="" />
-
                     
                             {
                                 chatMessages.map((message: any, index: any) => {
@@ -198,10 +184,10 @@ export default function Chat() {
                     
                     </div>
 
-                    {!isChatEmpty && <form onSubmit={handelNewMessage} className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white' } w-[70%] h-[12%] rounded-[36px] flex gap-5 p-6 items-center`}>
+                    <form onSubmit={handelNewMessage} className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white' } w-[70%] h-[12%] rounded-[36px] flex gap-5 p-6 items-center`}>
                         <Textarea onChange={(e) => setMessage(e.target.value)} className="resize-none" /> 
                         <Button size="icon" className={`${theme === 'dark' ? ' bg-[#5661F6] hover:bg-[#5331F3]' : ' bg-[#EA3FC5] hover:bg-[#d34db6]'} rounded-full w-14 h-14`}><img src={planeIcon} alt="" /></Button>
-                    </form>}
+                    </form>
                 </div>
             </div>
         </>

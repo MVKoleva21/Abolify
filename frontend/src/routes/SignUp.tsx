@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
+import Cookie from 'js-cookie'
 
 export default function SignUp() {
     const [userNameVal, setUserName] = useState<string>('')
@@ -42,7 +43,9 @@ export default function SignUp() {
         }
 
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/register`, data, {withCredentials: true})
-            .then(() => {
+            .then((res) => {
+                Cookie.set('token', res.data.access_token)
+
                 navigator("/chat")
             })
     }

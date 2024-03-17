@@ -30,7 +30,7 @@ export default function SignIn() {
 
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/login`, data, {withCredentials: true})
             .then((res) => {
-                Cookie.set('token', res.data.access_token)
+                localStorage.setItem('token', res.data.access_token)
                 navigator("/chat")
             })
     }
@@ -71,7 +71,7 @@ export default function SignIn() {
                                 <Input className="p-6 text-xl border-none" type="password" onChange={(e) => setPassword(e.target.value)} placeholder='Password' />
                             </div>
 
-                            <Button type="submit" className='mt-4 p-6 rounded-2xl text-xl bg-gradient-to-r from-[#6952F7] to-[#C11DA4]'>Sign Up</Button>          
+                            <Button type="submit" className='mt-4 p-6 rounded-2xl text-xl bg-gradient-to-r from-[#6952F7] to-[#C11DA4]'>Sign In</Button>          
                         </form>
 
                         <div className='flex justify-center items-center gap-14'>

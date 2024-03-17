@@ -21,7 +21,7 @@ load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("/message", tags=["messages"])
-def post_message(message: MessageIM, token: Annotated[str, Depends(oauth2_scheme)]):
+async def post_message(message: MessageIM, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         key = ''
         for i in os.getenv("RSA_PUBLIC").split(","):

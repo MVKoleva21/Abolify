@@ -21,7 +21,7 @@ load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.get("/chat/{chat_id}", tags=["chats"])
-def get_chat_messages(chat_id:int, token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_chat_messages(chat_id:int, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         key = ''
         for i in os.getenv("RSA_PUBLIC").split(","):
@@ -59,7 +59,7 @@ def get_chat_messages(chat_id:int, token: Annotated[str, Depends(oauth2_scheme)]
     }
 
 @router.post("/chat", tags=["chats"])
-def add_chat(chat: ChatIM, token: Annotated[str, Depends(oauth2_scheme)]):
+async def add_chat(chat: ChatIM, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         key = ''
         for i in os.getenv("RSA_PUBLIC").split(","):
@@ -89,7 +89,7 @@ def add_chat(chat: ChatIM, token: Annotated[str, Depends(oauth2_scheme)]):
     return curr.fetchone()
 
 @router.put("/chat/{chat_id}", tags=["chats"])
-def rename_chat(chat: ChatIM, chat_id: int, token: Annotated[str, Depends(oauth2_scheme)]):
+async def rename_chat(chat: ChatIM, chat_id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         key = ''
         for i in os.getenv("RSA_PUBLIC").split(","):

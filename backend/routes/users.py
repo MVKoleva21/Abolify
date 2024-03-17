@@ -21,7 +21,7 @@ load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("/register", tags=["authentication"])
-def register(user_im: UserIM):
+async def register(user_im: UserIM):
     curr.execute("""SELECT * FROM users WHERE username = %s""", (user_im.username, ))
 
     user_db = curr.fetchone()
@@ -54,7 +54,7 @@ def register(user_im: UserIM):
     conn.commit()
 
 @router.post("/login", tags=["authentication"])
-def login(user_im: UserIM):
+async def login(user_im: UserIM):
     print(user_im.username)
     curr.execute("""SELECT * FROM users WHERE username = %s""", (user_im.username, ))
 
@@ -81,7 +81,7 @@ def login(user_im: UserIM):
     return {"access_token": token}
 
 @router.post("/token", tags=["authentication"])
-def token(user_im: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+async def token(user_im: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     print(user_im.username)
     curr.execute("""SELECT * FROM users WHERE username = %s""", (user_im.username, ))
 
@@ -108,7 +108,7 @@ def token(user_im: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     return Token(access_token=token, token_type="bearer")
 
 @router.get("/user", tags=["users"])
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         key = ''
         for i in os.getenv("RSA_PUBLIC").split(","):
@@ -136,7 +136,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user[1]
 
 @router.get("/user/chats", tags=["users", "chats"])
-def get_user_chats(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_user_chats(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         key = ''
         for i in os.getenv("RSA_PUBLIC").split(","):
