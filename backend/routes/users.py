@@ -71,7 +71,10 @@ def login(user_im: UserIM):
     if password != user_db[2]:
         raise HTTPException(status_code=400, detail="Incorrect password")
 
-    private_key = os.getenv("RSA_PRIVATE")
+    key = ''
+    for i in os.getenv("RSA_PRIVATE").split(","):
+        key += i + "\n"
+    private_key = key
 
     token = jwt.encode({"iss": user_db[0], "exp": datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(hours=3)}, private_key, algorithm="RS256")
 
@@ -95,7 +98,10 @@ def token(user_im: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     if password != user_db[2]:
         raise HTTPException(status_code=401, detail="Incorrect password", headers={"WWW-Authenticate": "Bearer"})
 
-    private_key = os.getenv("RSA_PRIVATE")
+    key = ''
+    for i in os.getenv("RSA_PRIVATE").split(","):
+        key += i + "\n"
+    private_key = key
 
     token = jwt.encode({"iss": user_db[0], "exp": datetime.datetime.now(tz=pytz.utc) + datetime.timedelta(hours=3)}, private_key, algorithm="RS256")
 
@@ -104,7 +110,10 @@ def token(user_im: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
 @router.get("/user", tags=["users"])
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        public_key = os.getenv("RSA_PUBLIC")
+        key = ''
+        for i in os.getenv("RSA_PUBLIC").split(","):
+            key += i + "\n"
+        public_key = key
 
         payload = jwt.decode(token, public_key, algorithms=["RS256"])
 
@@ -126,7 +135,10 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 @router.get("/user/chats", tags=["users", "chats"])
 def get_user_chats(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        public_key = os.getenv("RSA_PUBLIC")
+        key = ''
+        for i in os.getenv("RSA_PUBLIC").split(","):
+            key += i + "\n"
+        public_key = key
 
         payload = jwt.decode(token, public_key, algorithms=["RS256"])
 

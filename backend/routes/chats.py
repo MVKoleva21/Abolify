@@ -23,7 +23,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @router.get("/chat/{chat_id}", tags=["chats"])
 def get_chat_messages(chat_id:int, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        public_key = os.getenv("RSA_PUBLIC")
+        key = ''
+        for i in os.getenv("RSA_PUBLIC").split(","):
+            key += i + "\n"
+        public_key = key
 
         payload = jwt.decode(token, public_key, algorithms=["RS256"])
 
@@ -58,7 +61,10 @@ def get_chat_messages(chat_id:int, token: Annotated[str, Depends(oauth2_scheme)]
 @router.post("/chat", tags=["chats"])
 def add_chat(chat: ChatIM, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        public_key = os.getenv("RSA_PUBLIC")
+        key = ''
+        for i in os.getenv("RSA_PUBLIC").split(","):
+            key += i + "\n"
+        public_key = key
 
         payload = jwt.decode(token, public_key, algorithms=["RS256"])
 
@@ -85,7 +91,11 @@ def add_chat(chat: ChatIM, token: Annotated[str, Depends(oauth2_scheme)]):
 @router.put("/chat/{chat_id}", tags=["chats"])
 def rename_chat(chat: ChatIM, chat_id: int, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        public_key = os.getenv("RSA_PUBLIC")
+        key = ''
+        for i in os.getenv("RSA_PUBLIC").split(","):
+            key += i + "\n"
+        public_key = key
+
         payload = jwt.decode(token, public_key, algorithms=["RS256"])
 
     except jwt.InvalidSignatureError:
