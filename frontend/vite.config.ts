@@ -17,5 +17,5 @@ export default defineConfig({
     strictPort: true,
     port: 5173,
   },
-  base: "."
+  base: "https://gentle-sea-054e81010.5.azurestaticapps.net/"
 })
