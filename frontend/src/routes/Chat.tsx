@@ -103,9 +103,8 @@ export default function Chat() {
         }
 
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/message`, data, {
-            withCredentials: true,
             headers: {
-                'Authorization': `Bearer ${Cookie.get('token')}`
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         })
         .then(() => {
@@ -115,7 +114,7 @@ export default function Chat() {
 
     return (
         <>
-            <div className={`min-w-screen h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-[#1E1E1E] to-[#6618E7]' : 'bg-gradient-to-b from-[#FAD987] to-[#EA3FC5]'} flex`}>
+            <div className={`min-w-screen overflow-hidden h-screen ${theme === 'dark' ? 'bg-gradient-to-b from-[#1E1E1E] to-[#6618E7]' : 'bg-gradient-to-b from-[#FAD987] to-[#EA3FC5]'} flex`}>
                 <div className={`w-1/5 ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} min-h-[80%] items-center flex flex-col my-5 ml-5 rounded-2xl`}>
                         <div className="w-[90%] h-full mt-12 flex flex-col items-center">
                             <div className="flex gap-4 items-center border border-pink-50 w-full p-2 px- 4 rounded-[36px]">
@@ -137,9 +136,9 @@ export default function Chat() {
                             <div className="flex items-center w-full gap-2 mt-[36px]">
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button className={`${theme === 'dark' ? 'bg-gradient-to-r from-[#1E1E1F] to-[#6218DC] text-white' : 'bg-gradient-to-r from-[#FAD987] to-[#EA3FC5] text-black'} p-6 w-full rounded-[36px]'}`}>+ New chat</Button>
+                                        <Button className={`${theme === 'dark' ? 'bg-gradient-to-r from-[#1E1E1F] to-[#6218DC] text-white' : 'bg-gradient-to-r from-[#FAD987] to-[#EA3FC5] text-black'} p-6 w-full rounded-[36px]'} font-black`}>+ New chat</Button>
                                     </DialogTrigger >
-                                    <DialogContent className="sm:max-w-[425px] bg-primary text-white">
+                                    <DialogContent className="sm:max-w-[425px] bg-black text-white">
                                         <DialogHeader>
                                             <DialogTitle>New Chat</DialogTitle>
                                         </DialogHeader>
@@ -169,23 +168,26 @@ export default function Chat() {
                     <div className={`${theme === 'dark' ? 'text-white' : 'text-black'} w-full h-5/6 flex flex-col p-4 ml-[300px] gap-2`}>
                         <img className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] mix-blend-overlay select-none" draggable="false" src={abolifyBotBig} alt="" />
                     
-                            {
-                                chatMessages.map((message: any, index: any) => {
-                                    if(index % 2 == 0)
-                                        return <div className="bg-gradient-to-r from-[#FAD987] to-[#ffffff00] w-[70%] h-[12%] rounded-xl flex gap-5 p-6 items-center">
-                                            <p className="text-white">{message[2]}</p>
-                                        </div>
-                                    else
-                                        return <div className="bg-gradient-to-r from-[#EA3FC5] to-[#ffffff00] w-[70%] h-[12%] rounded-xl flex gap-5 p-6 items-center">
-                                            <p className="text-white">{message[2]}</p>
-                                        </div>
-                                })
-                            }
+                            <ScrollArea className="gap-2 flex flex-col font-bold bg-black p-8 rounded-3xl w-[70%]">
+                                {
+
+                                    chatMessages.map((message: any, index: any) => {
+                                        if(index % 2 == 0)
+                                            return <div className="w-[70%] h-[12%] rounded-xl flex gap-5 p-3 items-center">
+                                                <p className="text-white break-words">{message[2]}</p>
+                                            </div>
+                                        else
+                                            return <div className="w-[70%] h-[12%] rounded-xl flex gap-5 p-3 items-center">
+                                                <p className="text-white ml-10 mt-[-10px] break-words">{message[2]}</p>
+                                            </div>
+                                    })
+                                }
+                            </ScrollArea>
                     
                     </div>
 
                     <form onSubmit={handelNewMessage} className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white' } w-[70%] h-[12%] rounded-[36px] flex gap-5 p-6 items-center`}>
-                        <Textarea onChange={(e) => setMessage(e.target.value)} className="resize-none" /> 
+                        <Textarea onChange={(e) => setMessage(e.target.value)} className="resize-none border-none" /> 
                         <Button size="icon" className={`${theme === 'dark' ? ' bg-[#5661F6] hover:bg-[#5331F3]' : ' bg-[#EA3FC5] hover:bg-[#d34db6]'} rounded-full w-14 h-14`}><img src={planeIcon} alt="" /></Button>
                     </form>
                 </div>

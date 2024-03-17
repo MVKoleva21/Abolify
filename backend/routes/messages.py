@@ -21,6 +21,7 @@ from heapq import nlargest
 
 load_dotenv()
 
+print(os.getenv("OPENAI_KEY"))
 client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
 router = APIRouter()
 
