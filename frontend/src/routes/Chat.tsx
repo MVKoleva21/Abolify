@@ -35,21 +35,21 @@ export default function Chat() {
         setTheme(newTheme);
     };
 
-    const [user] = useState<string>('none')
+    const [user, setUser] = useState<string>('none')
     const [chatHistory, setChatHistory] = useState<any>([])
     const [chat, setChat] = useState<any>(Cookie.get('chat') ? Cookie.get('chat') : 0)
     const [chatMessages, setChatMessages] = useState<any>([])
 
     useEffect(() => {
-        // axios.get(`${import.meta.env.VITE_BACKEND_URL}/user`, {
-        //     withCredentials: true,
-        //     headers: {
-        //             'Authorization': `Bearer ${Cookie.get('token')}`
-        //         }
-        //     })
-        //     .then((res) => {
-        //         //setUser(res.data) 
-        //     })
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/user`, {
+            withCredentials: true,
+            headers: {
+                    'Authorization': `Bearer ${Cookie.get('token')}`
+                }
+            })
+            .then((res) => {
+                console.log(res.data)
+            })
 
         axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/chats`, {
             withCredentials: true,

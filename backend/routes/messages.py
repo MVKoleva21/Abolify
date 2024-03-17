@@ -23,7 +23,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @router.post("/message", tags=["messages"])
 def post_message(message: MessageIM, token: Annotated[str, Depends(oauth2_scheme)]):
     try:
-        public_key = os.getenv("RSA_PUBLIC")
+        key = ''
+        for i in os.getenv("RSA_PUBLIC").split(","):
+            key += i + "\n"
+        public_key = key
 
         payload = jwt.decode(token, public_key, algorithms=["RS256"])
 
