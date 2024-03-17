@@ -42,10 +42,10 @@
         }
     },
     "mimeTypes": {
-        ".html": "text/html",
-        ".json": "text/json",
-        ".css": "text/css",
-        ".js": "text/javascript"
+        ".js": "application/javascript",
+        ".mjs": "application/javascript",
+        ".jsx": "application/javascript",
+        ".tsx": "application/javascript",
+        ".ts": "application/javascript"
     }
-  
   }
