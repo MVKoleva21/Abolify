@@ -13,10 +13,16 @@ import jwt
 import os
 import datetime
 import pytz
-
-router = APIRouter()
+import json
+from collections import Counter
+import re
+from openai import OpenAI
+from heapq import nlargest
 
 load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
+router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -55,4 +61,33 @@ async def post_message(message: MessageIM, token: Annotated[str, Depends(oauth2_
 
     conn.commit()
 
+    response = generate_response(message.content)
+
+    curr.execute("""
+    INSERT INTO messages(id, chat_id, content, created_at)
+    VALUES
+        (DEFAULT, %s, %s, DEFAULT)
+    RETURNING *
+    """, (message.chat_id, response))
+
+    conn.commit()
+
     return curr.fetchone()
+
+def generate_response(message: str):
+    with open("data/context.txt", "r") as f:
+        gpt_assistant_prompt = f.read()
+    message=[{"role": "assistant", "content": gpt_assistant_prompt}, {"role": "user", "content": message}]
+    temperature=0.2
+    max_tokens=256
+    frequency_penalty=0.0
+
+    response = client.chat.completions.create(
+        model="gpt-4-turbo-preview",
+        messages = message,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        frequency_penalty=frequency_penalty
+    )
+
+    return response.choices[0].message.content
