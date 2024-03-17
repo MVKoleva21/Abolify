@@ -130,6 +130,9 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
     user = curr.fetchone()
 
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return user[1]
 
 @router.get("/user/chats", tags=["users", "chats"])
