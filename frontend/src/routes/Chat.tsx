@@ -11,11 +11,6 @@ import axios from "axios";
 import Cookie from "js-cookie";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog"; 
 import { Input } from '@/components/ui/input';
-import Cookies from 'js-cookie';
-
-interface ChatEntryType {
-    name: string;
-}
 
 export default function Chat() {
     const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Default theme is light
@@ -37,7 +32,7 @@ export default function Chat() {
 
     const [user, setUser] = useState<string>()
     const [chatHistory, setChatHistory] = useState<any>([])
-    const [chat, setChat] = useState<any>(Cookies.get('chat'))
+    const [chat, setChat] = useState<any>(Cookie.get('chat'))
     const [chatMessages, setChatMessages] = useState<any>([])
 
     useEffect(() => {
@@ -59,7 +54,7 @@ export default function Chat() {
             headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
             }}).then((res) => {
-                Cookies.set('chat', chat)
+                Cookie.set('chat', chat)
                 setChatMessages(res.data['messages'])
             })
     }, [chat])
@@ -88,7 +83,7 @@ export default function Chat() {
             }
         })
         .then((res) => {
-            Cookies.set('chat', res.data['id'])
+            Cookie.set('chat', res.data['id'])
             window.location.reload()
         })
     }

@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import Cookie from 'js-cookie'
 
 export default function SignIn() {
     const [userName, setUserName] = useState<string>('')
